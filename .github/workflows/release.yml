@@ -42,6 +42,12 @@ jobs:
         run: |
           npx expo export --platform android
 
+      - name: List build files
+        run: |
+          echo "=== Build directory contents ==="
+          ls -la dist/ || echo "No dist directory"
+          find . -name "*.apk" -o -name "*.aab" -o -name "*.ipa" || echo "No APK/AAB/IPA files found"
+
       - name: Get version
         id: get_version
         run: echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
@@ -76,6 +82,12 @@ jobs:
       - name: Build iOS
         run: |
           npx expo export --platform ios
+
+      - name: List iOS build files
+        run: |
+          echo "=== iOS Build directory contents ==="
+          ls -la dist/ || echo "No dist directory"
+          find . -name "*.apk" -o -name "*.aab" -o -name "*.ipa" || echo "No APK/AAB/IPA files found"
 
       - name: Get version
         id: get_version
@@ -181,10 +193,25 @@ jobs:
         run: |
           echo "=== Android Builds ==="
           ls -la ./android-builds/ || echo "No android-builds directory"
+          if [ -d "./android-builds" ]; then
+            echo "=== Android Builds Contents ==="
+            find ./android-builds -type f -name "*" | head -20
+          fi
           echo "=== iOS Builds ==="
           ls -la ./ios-builds/ || echo "No ios-builds directory"
+          if [ -d "./ios-builds" ]; then
+            echo "=== iOS Builds Contents ==="
+            find ./ios-builds -type f -name "*" | head -20
+          fi
           echo "=== Current Directory ==="
           ls -la ./
+
+      - name: Delete existing release if exists
+        run: |
+          # Check if release exists and delete it
+          gh release delete v${{ steps.get_version.outputs.version }} --yes || echo "Release does not exist, continuing..."
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create Release
         id: create_release
