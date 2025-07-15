@@ -1,7 +1,5 @@
 ### Features
 
-Developer experience first:
-
 - ⚡ [Expo](https://expo.dev) for mobile development
 - ⚛️ [React Native](https://reactnative.dev) for building native apps using React
 - 🔥 Type checking [TypeScript](https://www.typescriptlang.org)
