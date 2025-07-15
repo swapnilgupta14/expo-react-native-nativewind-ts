@@ -9,19 +9,19 @@ on:
 jobs:
   lint-and-test:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        
+
       - name: Setup Bun
         uses: oven-sh/setup-bun@v1
         with:
           bun-version: latest
-          
+
       - name: Install dependencies
         run: bun install
-        
+
       - name: Check formatting with details
         run: |
           echo "🔍 Checking code formatting..."
@@ -34,7 +34,7 @@ jobs:
             exit 1
           fi
           echo "✅ All files are properly formatted"
-        
+
       - name: Run linter with details
         run: |
           echo "🔍 Running ESLint..."
@@ -47,14 +47,14 @@ jobs:
             exit 1
           fi
           echo "✅ All files pass linting"
-        
+
       - name: Run tests with coverage
         run: |
           echo "🧪 Running tests..."
           echo "📋 Test files to run:"
           find . -name "*.test.*" -o -name "*.spec.*" | head -10
           echo ""
-          
+
           if ! bun run test --passWithNoTests --coverage --verbose; then
             echo "❌ Tests failed!"
             echo "📋 Failed test details:"
@@ -64,10 +64,10 @@ jobs:
             echo "💡 To run tests in watch mode: bun run test --watch"
             exit 1
           fi
-          
+
           echo "✅ All tests passed"
           echo "📊 Coverage report generated"
-        
+
       - name: Upload coverage reports
         uses: codecov/codecov-action@v3
         with:
