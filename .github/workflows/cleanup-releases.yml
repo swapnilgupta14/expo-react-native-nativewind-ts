@@ -2,7 +2,7 @@ name: Cleanup Old Releases
 
 on:
   workflow_run:
-    workflows: ['Release']
+    workflows: ["Release"]
     types:
       - completed
 
@@ -19,24 +19,38 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo
             });
-
+            
             // Keep only the latest 3 releases
             const releasesToDelete = releases.data.slice(3);
-
-            for (const release of releasesToDelete) {
-              console.log(`Deleting release: ${release.name} (${release.tag_name})`);
-              await github.rest.repos.deleteRelease({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                release_id: release.id
-              });
-              
-              // Also delete the tag
-              await github.rest.git.deleteRef({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                ref: `tags/${release.tag_name}`
-              });
+            
+            if (releasesToDelete.length === 0) {
+              console.log('No old releases to delete. Keeping all releases.');
+              return;
             }
-
-            console.log(`Kept ${Math.min(releases.data.length, 3)} latest releases`);
+            
+            console.log(`Found ${releasesToDelete.length} old releases to delete`);
+            
+            for (const release of releasesToDelete) {
+              console.log(`🗑️ Deleting release: ${release.name} (${release.tag_name})`);
+              
+              try {
+                await github.rest.repos.deleteRelease({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  release_id: release.id
+                });
+                
+                // Also delete the tag
+                await github.rest.git.deleteRef({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  ref: `tags/${release.tag_name}`
+                });
+                
+                console.log(`✅ Successfully deleted release: ${release.name}`);
+              } catch (error) {
+                console.log(`⚠️ Failed to delete release ${release.name}: ${error.message}`);
+              }
+            }
+            
+            console.log(`✅ Kept ${Math.min(releases.data.length, 3)} latest releases`);
