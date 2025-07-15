@@ -30,4 +30,4 @@
 # 5. PR gets merged to develop
 # 6. When ready for release, create PR from develop to main
 # 7. Release workflow triggers when main is updated
-# 8. Android, iOS, and web deployments happen automatically 
+# 8. Android, iOS, and web deployments happen automatically

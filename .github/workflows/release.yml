@@ -18,21 +18,21 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        
+
       - name: Setup Bun
         uses: oven-sh/setup-bun@v1
         with:
           bun-version: latest
-          
+
       - name: Install dependencies
         run: bun install
-        
+
       - name: Check formatting
         run: bun run format:check
-        
+
       - name: Run linter
         run: bun run lint
-        
+
       - name: Run tests
         run: bun run test --passWithNoTests --coverage
 
@@ -42,29 +42,29 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        
+
       - name: Setup Bun
         uses: oven-sh/setup-bun@v1
         with:
           bun-version: latest
-          
+
       - name: Install dependencies
         run: bun install
-        
+
       - name: Setup Expo
         uses: expo/expo-github-action@v8
         with:
           expo-version: latest
           token: ${{ env.EXPO_TOKEN }}
-          
+
       - name: Build Android APK
         run: |
           npx expo export --platform android
-          
+
       - name: Get version
         id: get_version
         run: echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
-          
+
       - name: Upload Android APK
         uses: actions/upload-artifact@v4
         with:
@@ -77,29 +77,29 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        
+
       - name: Setup Bun
         uses: oven-sh/setup-bun@v1
         with:
           bun-version: latest
-          
+
       - name: Install dependencies
         run: bun install
-        
+
       - name: Setup Expo
         uses: expo/expo-github-action@v8
         with:
           expo-version: latest
           token: ${{ env.EXPO_TOKEN }}
-          
+
       - name: Build iOS
         run: |
           npx expo export --platform ios
-          
+
       - name: Get version
         id: get_version
         run: echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
-          
+
       - name: Upload iOS build
         uses: actions/upload-artifact@v4
         with:
@@ -112,18 +112,18 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        
+
       - name: Setup Bun
         uses: oven-sh/setup-bun@v1
         with:
           bun-version: latest
-          
+
       - name: Install dependencies
         run: bun install
-        
+
       - name: Build for Web
         run: bun run expo export --platform web
-        
+
       - name: Deploy to Vercel
         id: deploy
         uses: amondnet/vercel-action@v25
@@ -142,17 +142,17 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-        
+
       - name: Get version
         id: get_version
         run: echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
-        
+
       - name: Generate Release Notes
         id: release_notes
         run: |
           # Get commits since last tag
           PREVIOUS_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
-          
+
           if [ -z "$PREVIOUS_TAG" ]; then
             # First release
             COMMITS=$(git log --oneline --no-merges)
@@ -160,28 +160,28 @@ jobs:
             # Get commits since last tag
             COMMITS=$(git log --oneline --no-merges $PREVIOUS_TAG..HEAD)
           fi
-          
+
           # Generate release notes
           cat > release_notes.md << EOF
           # Release v${{ steps.get_version.outputs.version }}
-          
+
           ## 📥 Downloads
-          
+
           - **Android APK**: Download from assets below
           - **iOS Build**: Download from assets below  
           - **Web App**: https://expo-react-native-nativewind-m5u9y0feq-swapnilgupta14s-projects.vercel.app
-          
+
           ## 📋 Changes
-          
+
           \`\`\`
           $COMMITS
           \`\`\`
           EOF
-          
+
           echo "notes<<EOF" >> $GITHUB_OUTPUT
           cat release_notes.md >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
-          
+
       - name: Create Release
         id: create_release
         uses: softprops/action-gh-release@v1
@@ -196,19 +196,19 @@ jobs:
           files: |
             ./android-builds/dist/*
             ./ios-builds/dist/*
-          
+
       - name: Download Android APK
         uses: actions/download-artifact@v4
         with:
           name: android-apk
           path: ./android-builds
-          
+
       - name: Download iOS Build
         uses: actions/download-artifact@v4
         with:
           name: ios-build
           path: ./ios-builds
-          
+
       - name: Debug File Structure
         run: |
           echo "=== Android Builds ==="
@@ -216,4 +216,4 @@ jobs:
           echo "=== iOS Builds ==="
           ls -la ./ios-builds/ || echo "No ios-builds directory"
           echo "=== Current Directory ==="
-          ls -la ./ 
+          ls -la ./

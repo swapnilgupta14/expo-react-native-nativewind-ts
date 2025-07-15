@@ -3,4 +3,4 @@
   "outputDirectory": "dist",
   "installCommand": "bun install",
   "devCommand": "bun run expo start --web"
-} 
+}

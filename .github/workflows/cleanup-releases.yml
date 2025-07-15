@@ -2,7 +2,7 @@ name: Cleanup Old Releases
 
 on:
   workflow_run:
-    workflows: ["Release"]
+    workflows: ['Release']
     types:
       - completed
 
@@ -19,10 +19,10 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo
             });
-            
+
             // Keep only the latest 3 releases
             const releasesToDelete = releases.data.slice(3);
-            
+
             for (const release of releasesToDelete) {
               console.log(`Deleting release: ${release.name} (${release.tag_name})`);
               await github.rest.repos.deleteRelease({
@@ -38,5 +38,5 @@ jobs:
                 ref: `tags/${release.tag_name}`
               });
             }
-            
-            console.log(`Kept ${Math.min(releases.data.length, 3)} latest releases`); 
+
+            console.log(`Kept ${Math.min(releases.data.length, 3)} latest releases`);

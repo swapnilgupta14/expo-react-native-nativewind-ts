@@ -22,14 +22,51 @@ jobs:
       - name: Install dependencies
         run: bun install
         
-      - name: Check formatting
-        run: bun run format:check
+      - name: Check formatting with details
+        run: |
+          echo "🔍 Checking code formatting..."
+          if ! bun run format:check; then
+            echo "❌ Formatting issues found!"
+            echo "📋 Files with formatting issues:"
+            bun run prettier --check . --name-only || true
+            echo ""
+            echo "💡 To fix formatting issues, run: bun run format"
+            exit 1
+          fi
+          echo "✅ All files are properly formatted"
         
-      - name: Run linter
-        run: bun run lint
+      - name: Run linter with details
+        run: |
+          echo "🔍 Running ESLint..."
+          if ! bun run lint; then
+            echo "❌ Linting issues found!"
+            echo "📋 Files with linting issues:"
+            bun run eslint . --format=compact || true
+            echo ""
+            echo "💡 To fix linting issues, run: bun run lint --fix"
+            exit 1
+          fi
+          echo "✅ All files pass linting"
         
-      - name: Run tests
-        run: bun run test --passWithNoTests --coverage
+      - name: Run tests with coverage
+        run: |
+          echo "🧪 Running tests..."
+          echo "📋 Test files to run:"
+          find . -name "*.test.*" -o -name "*.spec.*" | head -10
+          echo ""
+          
+          if ! bun run test --passWithNoTests --coverage --verbose; then
+            echo "❌ Tests failed!"
+            echo "📋 Failed test details:"
+            bun run test --passWithNoTests --verbose --no-coverage || true
+            echo ""
+            echo "💡 To run tests locally: bun run test"
+            echo "💡 To run tests in watch mode: bun run test --watch"
+            exit 1
+          fi
+          
+          echo "✅ All tests passed"
+          echo "📊 Coverage report generated"
         
       - name: Upload coverage reports
         uses: codecov/codecov-action@v3
@@ -37,4 +74,4 @@ jobs:
           file: ./coverage/lcov.info
           flags: unittests
           name: codecov-umbrella
-          fail_ci_if_error: false 
+          fail_ci_if_error: false
