@@ -36,6 +36,16 @@
     "experiments": {
       "typedRoutes": true,
       "tsconfigPaths": true
+    },
+    "build": {
+      "development": {
+        "developmentClient": true,
+        "distribution": "internal"
+      },
+      "preview": {
+        "distribution": "internal"
+      },
+      "production": {}
     }
   }
 }

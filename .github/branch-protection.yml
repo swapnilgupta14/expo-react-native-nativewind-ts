@@ -1,0 +1,33 @@
+# Branch Protection Rules Configuration
+# This file documents the branch protection rules that should be set up in GitHub
+
+# MAIN BRANCH PROTECTION RULES:
+# - Require pull request reviews before merging
+# - Require status checks to pass before merging
+# - Require branches to be up to date before merging
+# - Restrict pushes that create files that are larger than 100 MB
+# - Require linear history
+# - Allow force pushes: Disabled
+# - Allow deletions: Disabled
+# - Required reviewers: swapnilgupta14 (required approval)
+# - Required status checks: CI workflow must pass
+
+# DEVELOP BRANCH PROTECTION RULES:
+# - Require pull request reviews before merging
+# - Require status checks to pass before merging
+# - Require branches to be up to date before merging
+# - Restrict pushes that create files that are larger than 100 MB
+# - Allow force pushes: Disabled
+# - Allow deletions: Disabled
+# - Required reviewers: swapnilgupta14 (required approval)
+# - Required status checks: CI workflow must pass
+
+# WORKFLOW:
+# 1. Developers create feature branches from develop
+# 2. Create PR to merge feature branch into develop
+# 3. CI checks run (lint, test, format)
+# 4. swapnilgupta14 approves the PR
+# 5. PR gets merged to develop
+# 6. When ready for release, create PR from develop to main
+# 7. Release workflow triggers when main is updated
+# 8. Android, iOS, and web deployments happen automatically 
