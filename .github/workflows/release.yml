@@ -311,21 +311,21 @@ jobs:
           VERSION="${{ steps.get_version.outputs.version }}"
           # Create release assets directory
           mkdir -p release-assets
-          
+
           # Copy and rename Android APK with version
           if [ -d "./android-builds" ]; then
             for apk in $(find ./android-builds -name "*.apk"); do
               cp "$apk" "release-assets/android-app-v${VERSION}.apk"
             done
           fi
-          
+
           # Copy and rename iOS IPA with version
           if [ -d "./ios-builds" ]; then
             for ipa in $(find ./ios-builds -name "*.ipa"); do
               cp "$ipa" "release-assets/ios-app-v${VERSION}.ipa"
             done
           fi
-          
+
           # List prepared assets
           echo "Prepared release assets:"
           ls -la release-assets/
