@@ -4,6 +4,10 @@ on:
   push:
     branches: [main]
 
+permissions:
+  contents: write
+  packages: write
+
 env:
   EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
   VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
@@ -181,6 +185,8 @@ jobs:
       - name: Create Release
         id: create_release
         uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: v${{ steps.get_version.outputs.version }}
           name: Release v${{ steps.get_version.outputs.version }}
@@ -188,8 +194,8 @@ jobs:
           draft: false
           prerelease: false
           files: |
-            ./android-builds/*
-            ./ios-builds/*
+            ./android-builds/dist/*
+            ./ios-builds/dist/*
           
       - name: Download Android APK
         uses: actions/download-artifact@v4
@@ -201,4 +207,13 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: ios-build
-          path: ./ios-builds 
+          path: ./ios-builds
+          
+      - name: Debug File Structure
+        run: |
+          echo "=== Android Builds ==="
+          ls -la ./android-builds/ || echo "No android-builds directory"
+          echo "=== iOS Builds ==="
+          ls -la ./ios-builds/ || echo "No ios-builds directory"
+          echo "=== Current Directory ==="
+          ls -la ./ 
