@@ -115,16 +115,16 @@ jobs:
         run: |
           # Create build directories
           mkdir -p dist/android
-          
+
           npx expo prebuild -p android
           echo "Starting Android build with EAS..."
           BUILD_URL=$(npx eas build --platform android --profile preview --non-interactive --json | jq -r '.url')
           echo "EAS Build URL: $BUILD_URL"
-          
+
           # Wait for build to complete and download
           echo "Waiting for build to complete and downloading..."
           npx eas build:download --build-url $BUILD_URL --output ./dist/android/app.apk
-          
+
           echo "Build completed and downloaded"
           ls -la dist/android/
 
@@ -176,16 +176,16 @@ jobs:
         run: |
           # Create build directories
           mkdir -p dist/ios
-          
+
           npx expo prebuild -p ios
           echo "Starting iOS build with EAS..."
           BUILD_URL=$(npx eas build --platform ios --profile preview --non-interactive --json | jq -r '.url')
           echo "EAS Build URL: $BUILD_URL"
-          
+
           # Wait for build to complete and download
           echo "Waiting for build to complete and downloading..."
           npx eas build:download --build-url $BUILD_URL --output ./dist/ios/app.ipa
-          
+
           echo "Build completed and downloaded"
           ls -la dist/ios/
 
