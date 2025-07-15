@@ -87,6 +87,13 @@ jobs:
     needs: ci-checks
     if: github.ref == 'refs/heads/main'
     steps:
+      - name: 🚀 Starting Android Build
+        run: |
+          echo "✅ CI checks completed successfully!"
+          echo "📱 Starting Android APK build..."
+          echo "⏳ This job was waiting for: ci-checks"
+          echo "🔗 Job dependencies: ci-checks → release-android"
+
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -129,6 +136,13 @@ jobs:
     needs: ci-checks
     if: github.ref == 'refs/heads/main'
     steps:
+      - name: 🚀 Starting iOS Build
+        run: |
+          echo "✅ CI checks completed successfully!"
+          echo "🍎 Starting iOS build..."
+          echo "⏳ This job was waiting for: ci-checks"
+          echo "🔗 Job dependencies: ci-checks → release-ios"
+
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -171,6 +185,13 @@ jobs:
     needs: [release-android, release-ios]
     if: github.ref == 'refs/heads/main'
     steps:
+      - name: 🚀 Starting Web Deployment
+        run: |
+          echo "✅ Android and iOS builds completed successfully!"
+          echo "🌐 Starting web deployment to Vercel..."
+          echo "⏳ This job was waiting for: release-android, release-ios"
+          echo "🔗 Job dependencies: ci-checks → [release-android, release-ios] → deploy-web"
+
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -200,6 +221,14 @@ jobs:
     needs: [release-android, release-ios, deploy-web]
     if: github.ref == 'refs/heads/main'
     steps:
+      - name: 🚀 Starting Release Creation
+        run: |
+          echo "✅ All builds and deployment completed successfully!"
+          echo "🏷️ Creating GitHub release with artifacts..."
+          echo "⏳ This job was waiting for: release-android, release-ios, deploy-web"
+          echo "🔗 Job dependencies: ci-checks → [release-android, release-ios] → deploy-web → create-release"
+          echo "📦 Will attach: Android APK, iOS build, and create release notes"
+
       - name: Checkout code
         uses: actions/checkout@v4
         with:
