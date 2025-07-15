@@ -300,8 +300,35 @@ jobs:
         run: |
           # Check if release exists and delete it
           gh release delete v${{ steps.get_version.outputs.version }} --yes || echo "Release does not exist, continuing..."
+          # Also delete the tag to ensure a clean state
+          git push --delete origin v${{ steps.get_version.outputs.version }} || echo "Tag does not exist remotely, continuing..."
+          git tag -d v${{ steps.get_version.outputs.version }} || echo "Tag does not exist locally, continuing..."
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Prepare Release Assets
+        run: |
+          VERSION="${{ steps.get_version.outputs.version }}"
+          # Create release assets directory
+          mkdir -p release-assets
+          
+          # Copy and rename Android APK with version
+          if [ -d "./android-builds" ]; then
+            for apk in $(find ./android-builds -name "*.apk"); do
+              cp "$apk" "release-assets/android-app-v${VERSION}.apk"
+            done
+          fi
+          
+          # Copy and rename iOS IPA with version
+          if [ -d "./ios-builds" ]; then
+            for ipa in $(find ./ios-builds -name "*.ipa"); do
+              cp "$ipa" "release-assets/ios-app-v${VERSION}.ipa"
+            done
+          fi
+          
+          # List prepared assets
+          echo "Prepared release assets:"
+          ls -la release-assets/
 
       - name: Create Release
         id: create_release
@@ -311,9 +338,7 @@ jobs:
         with:
           tag_name: v${{ steps.get_version.outputs.version }}
           name: Release v${{ steps.get_version.outputs.version }}
-          body: ${{ steps.release_notes.outputs.notes }}
+          body_path: release_notes.md
           draft: false
           prerelease: false
-          files: |
-            ./android-builds/**/*.apk
-            ./ios-builds/**/*.ipa
+          files: release-assets/*
