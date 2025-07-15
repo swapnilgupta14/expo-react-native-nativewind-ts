@@ -2,7 +2,7 @@ name: Cleanup Old Releases
 
 on:
   workflow_run:
-    workflows: ["Release"]
+    workflows: ['Release']
     types:
       - completed
 
@@ -19,17 +19,17 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo
             });
-            
+
             // Keep only the latest 3 releases
             const releasesToDelete = releases.data.slice(3);
-            
+
             if (releasesToDelete.length === 0) {
               console.log('No old releases to delete. Keeping all releases.');
               return;
             }
-            
+
             console.log(`Found ${releasesToDelete.length} old releases to delete`);
-            
+
             for (const release of releasesToDelete) {
               console.log(`🗑️ Deleting release: ${release.name} (${release.tag_name})`);
               
@@ -52,5 +52,5 @@ jobs:
                 console.log(`⚠️ Failed to delete release ${release.name}: ${error.message}`);
               }
             }
-            
+
             console.log(`✅ Kept ${Math.min(releases.data.length, 3)} latest releases`);
