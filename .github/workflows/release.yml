@@ -124,20 +124,20 @@ jobs:
         run: |
           # Create build directories
           mkdir -p dist/android
-          
+
           npx expo prebuild -p android
           echo "Starting Android build with EAS..."
           BUILD_ID=$(eas build --platform android --profile preview --non-interactive --json | jq -r '.id')
           echo "EAS Build ID: $BUILD_ID"
-          
+
           # Wait for build to complete
           echo "Waiting for build to complete..."
           eas build:wait --id $BUILD_ID --non-interactive
-          
+
           # Download the build artifact
           echo "Downloading build artifact..."
           eas build:download --id $BUILD_ID --output ./dist/android/app.apk --non-interactive
-          
+
           echo "Build completed and downloaded"
           ls -la dist/android/
 
@@ -189,20 +189,20 @@ jobs:
         run: |
           # Create build directories
           mkdir -p dist/ios
-          
+
           npx expo prebuild -p ios
           echo "Starting iOS build with EAS..."
           BUILD_ID=$(eas build --platform ios --profile preview --non-interactive --json | jq -r '.id')
           echo "EAS Build ID: $BUILD_ID"
-          
+
           # Wait for build to complete
           echo "Waiting for build to complete..."
           eas build:wait --id $BUILD_ID --non-interactive
-          
+
           # Download the build artifact
           echo "Downloading build artifact..."
           eas build:download --id $BUILD_ID --output ./dist/ios/app.ipa --non-interactive
-          
+
           echo "Build completed and downloaded"
           ls -la dist/ios/
 
@@ -348,21 +348,21 @@ jobs:
           VERSION="${{ steps.get_version.outputs.version }}"
           # Create release assets directory
           mkdir -p release-assets
-          
+
           # Copy and rename Android APK with version
           if [ -d "./dist/android" ]; then
             for apk in $(find ./dist/android -name "*.apk"); do
               cp "$apk" "release-assets/android-app-v${VERSION}.apk"
             done
           fi
-          
+
           # Copy and rename iOS IPA with version
           if [ -d "./dist/ios" ]; then
             for ipa in $(find ./dist/ios -name "*.ipa"); do
               cp "$ipa" "release-assets/ios-app-v${VERSION}.ipa"
             done
           fi
-          
+
           # List prepared assets
           echo "Prepared release assets:"
           ls -la release-assets/
