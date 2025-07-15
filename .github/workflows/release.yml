@@ -122,7 +122,10 @@ jobs:
           echo "Installing and configuring EAS CLI..."
           npm install -g eas-cli
           echo "$(npm bin -g)" >> $GITHUB_PATH
-          npx eas login --non-interactive --token ${{ env.EXPO_TOKEN }}
+          echo "Logging in to EAS..."
+          # Create eas.json credentials file
+          mkdir -p ~/.eas
+          echo '{"auth": {"accessToken": "${{ env.EXPO_TOKEN }}"}}' > ~/.eas/auth.json
           echo "Verifying EAS installation..."
           which eas
           eas --version
@@ -131,20 +134,22 @@ jobs:
         run: |
           # Create build directories
           mkdir -p dist/android
-
+          
           npx expo prebuild -p android
           echo "Starting Android build with EAS..."
+          # Set EXPO_TOKEN for all eas commands
+          export EXPO_TOKEN="${{ env.EXPO_TOKEN }}"
           BUILD_ID=$(npx eas build --platform android --profile preview --non-interactive --json | jq -r '.id')
           echo "EAS Build ID: $BUILD_ID"
-
+          
           # Wait for build to complete
           echo "Waiting for build to complete..."
           npx eas build:wait --id $BUILD_ID --non-interactive
-
+          
           # Download the build artifact
           echo "Downloading build artifact..."
           npx eas build:download --id $BUILD_ID --output ./dist/android/app.apk --non-interactive
-
+          
           echo "Build completed and downloaded"
           ls -la dist/android/
 
@@ -201,20 +206,22 @@ jobs:
         run: |
           # Create build directories
           mkdir -p dist/ios
-
+          
           npx expo prebuild -p ios
           echo "Starting iOS build with EAS..."
+          # Set EXPO_TOKEN for all eas commands
+          export EXPO_TOKEN="${{ env.EXPO_TOKEN }}"
           BUILD_ID=$(npx eas build --platform ios --profile preview --non-interactive --json | jq -r '.id')
           echo "EAS Build ID: $BUILD_ID"
-
+          
           # Wait for build to complete
           echo "Waiting for build to complete..."
           npx eas build:wait --id $BUILD_ID --non-interactive
-
+          
           # Download the build artifact
           echo "Downloading build artifact..."
           npx eas build:download --id $BUILD_ID --output ./dist/ios/app.ipa --non-interactive
-
+          
           echo "Build completed and downloaded"
           ls -la dist/ios/
 
