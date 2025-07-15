@@ -1,7 +1,6 @@
 {
   "buildCommand": "bun run expo export --platform web",
   "outputDirectory": "dist",
-  "framework": "expo",
   "installCommand": "bun install",
   "devCommand": "bun run expo start --web"
 } 
