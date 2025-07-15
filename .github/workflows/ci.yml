@@ -55,10 +55,10 @@ jobs:
           find . -name "*.test.*" -o -name "*.spec.*" | head -10
           echo ""
 
-          if ! bun run test --passWithNoTests --coverage --verbose; then
+          if ! bun run jest --passWithNoTests --coverage --verbose; then
             echo "❌ Tests failed!"
             echo "📋 Failed test details:"
-            bun run test --passWithNoTests --verbose --no-coverage || true
+            bun run jest --passWithNoTests --verbose --no-coverage || true
             echo ""
             echo "💡 To run tests locally: bun run test"
             echo "💡 To run tests in watch mode: bun run test --watch"
