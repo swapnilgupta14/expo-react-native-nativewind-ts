@@ -105,6 +105,11 @@ jobs:
       - name: Install dependencies
         run: bun install
 
+      - name: Install additional tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq
+
       - name: Setup Expo
         uses: expo/expo-github-action@v8
         with:
@@ -116,8 +121,10 @@ jobs:
         run: |
           echo "Installing and configuring EAS CLI..."
           npm install -g eas-cli
+          echo "$(npm bin -g)" >> $GITHUB_PATH
           npx eas login --non-interactive --token ${{ env.EXPO_TOKEN }}
           echo "Verifying EAS installation..."
+          which eas
           eas --version
 
       - name: Build Android APK
@@ -127,16 +134,16 @@ jobs:
 
           npx expo prebuild -p android
           echo "Starting Android build with EAS..."
-          BUILD_ID=$(eas build --platform android --profile preview --non-interactive --json | jq -r '.id')
+          BUILD_ID=$(npx eas build --platform android --profile preview --non-interactive --json | jq -r '.id')
           echo "EAS Build ID: $BUILD_ID"
 
           # Wait for build to complete
           echo "Waiting for build to complete..."
-          eas build:wait --id $BUILD_ID --non-interactive
+          npx eas build:wait --id $BUILD_ID --non-interactive
 
           # Download the build artifact
           echo "Downloading build artifact..."
-          eas build:download --id $BUILD_ID --output ./dist/android/app.apk --non-interactive
+          npx eas build:download --id $BUILD_ID --output ./dist/android/app.apk --non-interactive
 
           echo "Build completed and downloaded"
           ls -la dist/android/
@@ -179,6 +186,11 @@ jobs:
       - name: Install dependencies
         run: bun install
 
+      - name: Install additional tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq
+
       - name: Setup Expo
         uses: expo/expo-github-action@v8
         with:
@@ -192,16 +204,16 @@ jobs:
 
           npx expo prebuild -p ios
           echo "Starting iOS build with EAS..."
-          BUILD_ID=$(eas build --platform ios --profile preview --non-interactive --json | jq -r '.id')
+          BUILD_ID=$(npx eas build --platform ios --profile preview --non-interactive --json | jq -r '.id')
           echo "EAS Build ID: $BUILD_ID"
 
           # Wait for build to complete
           echo "Waiting for build to complete..."
-          eas build:wait --id $BUILD_ID --non-interactive
+          npx eas build:wait --id $BUILD_ID --non-interactive
 
           # Download the build artifact
           echo "Downloading build artifact..."
-          eas build:download --id $BUILD_ID --output ./dist/ios/app.ipa --non-interactive
+          npx eas build:download --id $BUILD_ID --output ./dist/ios/app.ipa --non-interactive
 
           echo "Build completed and downloaded"
           ls -la dist/ios/
