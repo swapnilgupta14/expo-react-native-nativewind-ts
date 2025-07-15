@@ -12,8 +12,33 @@ env:
   EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
 jobs:
+  # First run all CI checks
+  ci-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+          
+      - name: Install dependencies
+        run: bun install
+        
+      - name: Check formatting
+        run: bun run format:check
+        
+      - name: Run linter
+        run: bun run lint
+        
+      - name: Run tests
+        run: bun run test --passWithNoTests --coverage
+
   release-android:
     runs-on: ubuntu-latest
+    needs: [ci-checks]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -48,6 +73,7 @@ jobs:
 
   release-ios:
     runs-on: macos-latest
+    needs: [ci-checks]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -99,6 +125,7 @@ jobs:
         run: bun run expo export --platform web
         
       - name: Deploy to Vercel
+        id: deploy
         uses: amondnet/vercel-action@v25
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
@@ -138,41 +165,17 @@ jobs:
           cat > release_notes.md << EOF
           # Release v${{ steps.get_version.outputs.version }}
           
-          ## 🚀 What's New
+          ## 📥 Downloads
           
-          This release includes the following updates:
-          
-          ### 📱 Mobile Apps
-          - **Android**: Static build attached to this release
-          - **iOS**: Static build available for distribution
-          
-          ### 🌐 Web App
-          - Deployed to Vercel
-          - Accessible at your Vercel domain
+          - **Android APK**: Download from assets below
+          - **iOS Build**: Download from assets below  
+          - **Web App**: https://expo-react-native-nativewind-m5u9y0feq-swapnilgupta14s-projects.vercel.app
           
           ## 📋 Changes
           
           \`\`\`
           $COMMITS
           \`\`\`
-          
-          ## 📥 Downloads
-          
-          - **Android Build**: Download from the assets below
-          - **iOS Build**: Available for internal testing
-          - **Web**: Live at your Vercel deployment
-          
-          ## 🔧 Technical Details
-          
-          - Built with Expo SDK 53
-          - React Native 0.79.5
-          - NativeWind for styling
-          - TypeScript support
-          - Static exports for mobile platforms
-          
-          ---
-          
-          *Generated automatically on $(date)*
           EOF
           
           echo "notes<<EOF" >> $GITHUB_OUTPUT
