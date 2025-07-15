@@ -1,7 +1,7 @@
 {
   "name": "expo-nativewind-typescript-boilerplate",
   "main": "expo-router/entry",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "scripts": {
     "start": "EXPO_USE_FAST_RESOLVER=1 bunx expo start -c",
     "android": "bun expo run:android",
