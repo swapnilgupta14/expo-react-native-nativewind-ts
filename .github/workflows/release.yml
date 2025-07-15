@@ -139,7 +139,7 @@ jobs:
           echo "Starting Android build with EAS..."
           # Set EXPO_TOKEN for all eas commands
           export EXPO_TOKEN="${{ env.EXPO_TOKEN }}"
-          BUILD_ID=$(npx eas build --platform android --profile preview --non-interactive --json | jq -r '.id')
+          BUILD_ID=$(npx eas build --platform android --profile preview --non-interactive --json | jq -r '.[0].id')
           echo "EAS Build ID: $BUILD_ID"
 
           # Wait for build to complete
@@ -211,7 +211,7 @@ jobs:
           echo "Starting iOS build with EAS..."
           # Set EXPO_TOKEN for all eas commands
           export EXPO_TOKEN="${{ env.EXPO_TOKEN }}"
-          BUILD_ID=$(npx eas build --platform ios --profile preview --non-interactive --json | jq -r '.id')
+          BUILD_ID=$(npx eas build --platform ios --profile preview --non-interactive --json | jq -r '.[0].id')
           echo "EAS Build ID: $BUILD_ID"
 
           # Wait for build to complete
