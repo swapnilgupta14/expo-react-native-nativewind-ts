@@ -94,16 +94,19 @@ jobs:
       - name: Install dependencies
         run: bun install
         
+      - name: Build for Web
+        run: bun run expo export --platform web
+        
       - name: Setup Vercel CLI
         run: npm install --global vercel@latest
         
       - name: Deploy to Vercel
         run: |
-          vercel --prod --token ${{ env.VERCEL_TOKEN }} --yes
+          vercel --prod --token ${{ secrets.VERCEL_TOKEN }} --confirm
         env:
-          VERCEL_TOKEN: ${{ env.VERCEL_TOKEN }}
-          VERCEL_PROJECT_ID: ${{ env.VERCEL_PROJECT_ID }}
-          VERCEL_ORG_ID: ${{ env.VERCEL_ORG_ID }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
 
   create-release:
     runs-on: ubuntu-latest
